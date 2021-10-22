@@ -11,18 +11,37 @@ URL = "https://suchonsite-server.herokuapp.com/people"
 
 class ServiceSiteAPITest(unittest.TestCase):
 
+    """
+    Test API endpoint by correct date format with status code
+    """
     def test_get_people_by_date_status_code(self):
-        test_day = "20-10-2021"
-        api = URL + "/by_date/" + test_day
+        current_day = today.strftime('%d-%m-%Y')
+        api = URL + "/by_date/" + current_day
         res = requests.get(api)
         self.assertEqual(200, res.status_code)
+    
+    """
+    Test API endpoint with current day and correct date format The response shouldn't be an empty JSON
+    """
+    def test_get_people_by_date(self):
+        current_day = today.strftime('%d-%m-%Y')
+        api = URL + "/by_date/" + current_day
+        res = requests.get(api)
+        people = res.json()
+        self.assertNotEqual({}, people)
 
-    def test_get_people_by_wrong_date_status_code(self):
-        future_day = today + timedelta(days=5)
-        api = URL + "/by_date/" + future_day.strftime('%d-%m-%Y')
+    """
+    Test API endpoint with wrong date format
+    """
+    def test_get_people_by_wrong_date_format(self):
+        wrong_current_day = today.strftime('%d/%m/%Y')
+        api = URL + "/by_date/" + wrong_current_day
         res = requests.get(api)
         self.assertEqual(404, res.status_code)
     
+    """
+    Test API response JSON schma structure
+    """
     def test_get_people_schema_structure(self):
         schema = {
             "type" : "object",
