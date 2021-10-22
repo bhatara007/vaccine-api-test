@@ -44,7 +44,7 @@ class ServiceSiteAPITest(unittest.TestCase):
     
     """
     Test ID: 4
-    Test API response JSON schma structure
+    Test API response JSON schema structure
     """
     def test_get_people_schema_structure(self):
         schema = {
