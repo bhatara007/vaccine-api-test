@@ -89,6 +89,8 @@ class ServiceSiteGetDataByDateAPITest(unittest.TestCase):
                 "citizen_id" : {"type" : "string"},
                 "occupation" : {"type" : "string"},
                 "address" : {"type" : "string"},
+                "priority" : {"type" : "string"},
+                "vac_time" : {"type" : "string"}
             },
         }
         test_day = "20-10-2021"
