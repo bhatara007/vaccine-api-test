@@ -26,11 +26,11 @@ class ServiceSiteAPITest(unittest.TestCase):
     Test API endpoint with current day and correct date format The response shouldn't be an empty JSON
     """
     def test_get_people_by_date(self):
-        current_day = today.strftime('%d-%m-%Y')
+        current_day = '20-10-2021'
         api = URL + "/by_date/" + current_day
         res = requests.get(api)
         people = res.json()
-        self.assertNotEqual({}, people)
+        self.assertEqual(people['date'], current_day)
 
     """
     Test ID: 3
@@ -61,6 +61,53 @@ class ServiceSiteAPITest(unittest.TestCase):
         #if both JSON format are the same validate() method will return None Otherwise 
         #it will throws error exception
         self.assertIsNone(validate(instance=response, schema=schema))
+
+    """
+    Test ID: 5
+    Test API endpoint status code with future day data 
+    """
+    def test_get_people_by_future_date(self):
+        future_date = (today + timedelta(5)).strftime('%d-%m-%Y')
+        api = URL + "/by_date/" + future_date
+        res = requests.get(api)
+        self.assertEqual(202, res.status_code)
+    
+    """
+    Test ID: 6
+    Test API response person JSON schema structure
+    """
+    def test_get_person_schema_structure(self):
+        schema = {
+            "type" : "object",
+            "properties" : {
+                "reservation_id" : {"type" : "number"},
+                "register_timestamp" : {"type" : "string"},
+                "name" : {"type" : "array"},
+                "surname" : {"type" : "string"},
+                "birth_date" : {"type" : "string"},
+                "citizen_id" : {"type" : "string"},
+                "occupation" : {"type" : "string"},
+                "reservation_id" : {"type" : "string"},
+                "address" : {"type" : "string"},
+            },
+        }
+        test_day = "20-10-2021"
+        api = URL + "/by_date/" + test_day
+        response = requests.get(api).json()
+        for person in response['people']:
+            self.assertIsNone(validate(instance=person, schema=schema))
+    
+    """
+    Test ID: 7
+    Test API get all data status code
+    """
+    def test_get_all_data_status_code(self):
+        api = URL + "/all/"
+        response = requests.get(api)
+        self.assertEqual(response.status_code, 200)
+
+            
+
         
 if __name__ == '__main__':
     unittest.main()
