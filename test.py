@@ -23,7 +23,8 @@ class ServiceSiteAPITest(unittest.TestCase):
     
     """
     Test ID: 2
-    Test API endpoint with current day and correct date format The response shouldn't be an empty JSON
+    Test API endpoint with current day and correct date format we should get the data with the same date that
+    we requested
     """
     def test_get_people_by_date(self):
         current_day = '20-10-2021'
@@ -82,12 +83,11 @@ class ServiceSiteAPITest(unittest.TestCase):
             "properties" : {
                 "reservation_id" : {"type" : "number"},
                 "register_timestamp" : {"type" : "string"},
-                "name" : {"type" : "array"},
+                "name" : {"type" : "string"},
                 "surname" : {"type" : "string"},
                 "birth_date" : {"type" : "string"},
                 "citizen_id" : {"type" : "string"},
                 "occupation" : {"type" : "string"},
-                "reservation_id" : {"type" : "string"},
                 "address" : {"type" : "string"},
             },
         }
