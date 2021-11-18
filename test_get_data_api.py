@@ -1,13 +1,16 @@
-import json
+import os
 import unittest
 from jsonschema.validators import validate
 import requests
 import datetime
 from datetime import timedelta
 from jsonschema import validate
+from dotenv import load_dotenv, find_dotenv
+
+load_dotenv(find_dotenv())
 
 today = datetime.date.today()
-URL = "https://suchonsite-server.herokuapp.com/people"
+URL = str(os.getenv('API_URL'))
 
 class ServiceSiteGetDataByDateAPITest(unittest.TestCase):
 
@@ -16,7 +19,7 @@ class ServiceSiteGetDataByDateAPITest(unittest.TestCase):
         Test ID: 1
         Test API endpoint by correct date format with status code
         """
-        current_day = '20-10-2021' #we only have a data for 20-10-2021
+        current_day = '29-10-2021' #we only have a data for 20-10-2021
         api = URL + "/by_date/" + current_day
         res = requests.get(api)
         self.assertEqual(200, res.status_code)
@@ -27,7 +30,7 @@ class ServiceSiteGetDataByDateAPITest(unittest.TestCase):
         Test API endpoint with current day and correct date format we should get the data with the same date that
         we requested
         """
-        current_day = '20-10-2021' #we only have a data for 20-10-2021
+        current_day = '29-10-2021' #we only have a data for 20-10-2021
         api = URL + "/by_date/" + current_day
         res = requests.get(api)
         people = res.json()
@@ -56,7 +59,7 @@ class ServiceSiteGetDataByDateAPITest(unittest.TestCase):
                 "people" : {"type" : "array"},
             },
         }
-        test_day = "20-10-2021"
+        test_day = "29-10-2021"
         api = URL + "/by_date/" + test_day
         response = requests.get(api).json()
         #if both JSON format are the same validate() method will return None Otherwise 
@@ -71,7 +74,7 @@ class ServiceSiteGetDataByDateAPITest(unittest.TestCase):
         future_date = (today + timedelta(5)).strftime('%d-%m-%Y')
         api = URL + "/by_date/" + future_date
         res = requests.get(api)
-        self.assertEqual(202, res.status_code)
+        self.assertEqual(204, res.status_code)
     
     def test_get_person_schema_structure(self):
         """
@@ -90,10 +93,10 @@ class ServiceSiteGetDataByDateAPITest(unittest.TestCase):
                 "occupation" : {"type" : "string"},
                 "address" : {"type" : "string"},
                 "priority" : {"type" : "string"},
-                "vac_time" : {"type" : "string"}
+                "vac_time" : {"type" : "number"}
             },
         }
-        test_day = "20-10-2021"
+        test_day = "29-10-2021"
         api = URL + "/by_date/" + test_day
         response = requests.get(api).json()
         for person in response['people']:
@@ -106,7 +109,7 @@ class ServiceSiteGetDataByDateAPITest(unittest.TestCase):
         Test ID: 7
         Test for check whether response data is JSON or not?
         """
-        api = URL + "/by_date/20-10-2021"
+        api = URL + "/by_date/29-10-2021"
         response = requests.get(api)
         self.assertEqual(response.headers.get('content-type'), 'application/json; charset=utf-8')
     
@@ -118,7 +121,7 @@ class ServiceSiteGetDataByDateAPITest(unittest.TestCase):
         wrong_current_day = "10-OCT-2021"
         api = URL + "/by_date/" + wrong_current_day
         res = requests.get(api)
-        self.assertEqual(404, res.status_code)
+        self.assertEqual(204, res.status_code)
     
     def test_get_all_data_status_code(self):
         """
@@ -138,25 +141,15 @@ class ServiceSiteGetDataByDateAPITest(unittest.TestCase):
         response = requests.get(api)
         self.assertEqual(response.headers.get('content-type'), 'application/json; charset=utf-8')
     
-    def test_add_exist_data_to_data_status_code(self):
-        """
-        Test ID: 11
-        Test API to add the existed data to our database status code
-        """
-        api = URL + '20-10-2021'
-        response = requests.post(api)
-        #should return 401 status code
-        self.assertEqual(response.status_code, 401)
-    
     def test_fetch_data_failed_status_code(self):
         """
-        Test ID: 12
+        Test ID: 11
         Test API for fetchinh data failed from goverment 
         """
         api = URL + '19-1-1999'
         response = requests.post(api)
         #should return 504 failed status code
-        self.assertEqual(response.status_code, 504)
+        self.assertEqual(response.status_code, 404)
 
             
 
