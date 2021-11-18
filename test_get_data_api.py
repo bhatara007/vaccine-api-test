@@ -8,7 +8,9 @@ from jsonschema import validate
 from dotenv import load_dotenv, find_dotenv
 
 load_dotenv(find_dotenv())
-URL = str(os.getenv('API_URL'))
+
+BASE_URL = str(os.getenv('BASE_URL'))
+URL = str(os.getenv('PEOPLE_URL'))
 
 today = datetime.date.today()
 
@@ -19,7 +21,7 @@ class ServiceSiteGetDataByDateAPITest(unittest.TestCase):
         Test ID: 1
         Test API endpoint by correct date format with status code
         """
-        current_day = '29-10-2021' #we only have a data for 20-10-2021
+        current_day = '11-11-2021' #we only have a data for 20-10-2021
         api = URL + "/by_date/" + current_day
         res = requests.get(api)
         self.assertEqual(200, res.status_code)
@@ -30,7 +32,7 @@ class ServiceSiteGetDataByDateAPITest(unittest.TestCase):
         Test API endpoint with current day and correct date format we should get the data with the same date that
         we requested
         """
-        current_day = '29-10-2021' #we only have a data for 20-10-2021
+        current_day = '11-11-2021' #we only have a data for 20-10-2021
         api = URL + "/by_date/" + current_day
         res = requests.get(api)
         people = res.json()
@@ -59,7 +61,7 @@ class ServiceSiteGetDataByDateAPITest(unittest.TestCase):
                 "people" : {"type" : "array"},
             },
         }
-        test_day = "29-10-2021"
+        test_day = "11-11-2021"
         api = URL + "/by_date/" + test_day
         response = requests.get(api).json()
         #if both JSON format are the same validate() method will return None Otherwise 
@@ -96,7 +98,7 @@ class ServiceSiteGetDataByDateAPITest(unittest.TestCase):
                 "vac_time" : {"type" : "number"}
             },
         }
-        test_day = "29-10-2021"
+        test_day = "11-11-2021"
         api = URL + "/by_date/" + test_day
         response = requests.get(api).json()
         for person in response['people']:
@@ -109,7 +111,7 @@ class ServiceSiteGetDataByDateAPITest(unittest.TestCase):
         Test ID: 7
         Test for check whether response data is JSON or not?
         """
-        api = URL + "/by_date/29-10-2021"
+        api = URL + "/by_date/11-11-2021"
         response = requests.get(api)
         self.assertEqual(response.headers.get('content-type'), 'application/json; charset=utf-8')
     
@@ -144,12 +146,22 @@ class ServiceSiteGetDataByDateAPITest(unittest.TestCase):
     def test_fetch_data_failed_status_code(self):
         """
         Test ID: 11
-        Test API for fetchinh data failed from goverment 
+        Test API for fetching data failed from goverment 
         """
         api = URL + '19-1-1999'
         response = requests.post(api)
         #should return 504 failed status code
         self.assertEqual(response.status_code, 404)
+
+    def test_delete_data_status_code(self):
+        """
+        Test ID: 12
+        Test API for detele data failed
+        """
+        response = requests.post(BASE_URL + "/getDataFromGov/12-12-2000")
+        self.assertEqual(response.status_code, 200) # make sure that created success
+        response = requests.delete(URL + "/by_date/12-12-2000")
+        self.assertEqual(response.status_code, 200)
 
             
 
