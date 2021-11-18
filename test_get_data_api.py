@@ -8,9 +8,9 @@ from jsonschema import validate
 from dotenv import load_dotenv, find_dotenv
 
 load_dotenv(find_dotenv())
+URL = str(os.getenv('API_URL'))
 
 today = datetime.date.today()
-URL = str(os.getenv('API_URL'))
 
 class ServiceSiteGetDataByDateAPITest(unittest.TestCase):
 
